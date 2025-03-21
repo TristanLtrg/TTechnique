@@ -2,6 +2,9 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { TasksService } from './tasks.service';
 import { TaskStatus } from '@prisma/client';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { CreateTaskDto } from './dto/create-task.dto';
+import { UpdateTaskDto } from './dto/update-task.dto';
+import { TaskResponseDto } from './dto/task-response.dto';
 
 @ApiTags('tasks')
 @Controller('tasks')
@@ -11,14 +14,14 @@ export class TasksController {
   @Post()
   @ApiOperation({ summary: 'Créer une tâche' })
   @ApiResponse({ status: 201, description: 'Tâche créée.' })
-  async create(@Body() body: { title: string; description: string; createdDate?: string; status?: TaskStatus }) {
-    return this.tasksService.createTask(body.title, body.description, body.createdDate, body.status);
+  async create(@Body() createTaskDto: CreateTaskDto) {
+    return this.tasksService.createTask(createTaskDto.title, createTaskDto.description, createTaskDto.createdDate, createTaskDto.status);
   }
 
   @Get()
   @ApiOperation({ summary: 'Récupérer toutes les tâches' })
   @ApiResponse({ status: 200, description: 'Liste des tâches récupérée.' })
-  async findAll() {
+  async findAll(): Promise<TaskResponseDto[]> {
     return this.tasksService.getTasks();
   }
 
@@ -26,7 +29,7 @@ export class TasksController {
   @ApiOperation({ summary: 'Récupérer une tâche par ID' })
   @ApiResponse({ status: 200, description: 'Tâche trouvée.' })
   @ApiResponse({ status: 404, description: 'Tâche non trouvée.' })
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<TaskResponseDto | null> {
     return this.tasksService.getTaskById(Number(id));
   }
 
@@ -35,9 +38,9 @@ export class TasksController {
   @ApiResponse({ status: 200, description: 'Tâche mise à jour.' })
   async update(
     @Param('id') id: string,
-    @Body() body: { title?: string; description?: string; status?: TaskStatus }
+    @Body() updateTaskDto: UpdateTaskDto
   ) {
-    return this.tasksService.updateTask(Number(id), body);
+    return this.tasksService.updateTask(Number(id), updateTaskDto);
   }
 
   @Delete(':id')
