@@ -26,7 +26,7 @@ mode dev:
 
 `npm run start:dev`
 
-documnetation Api (Swagger):
+documentation Api (Swagger):
 
 `http://localhost:3001/api/`
 
